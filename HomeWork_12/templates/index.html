@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SUPER_APP</title>
+</head>
+<body>
+<h2>Список контактів</h2>
+
+<div>
+  <input type="hidden" id="cntId"/>
+  <p>
+    Name:<br/>
+    <input id="cntName"/>
+  </p>
+  <p>
+    Email:<br/>
+    <input id="cntEmail"/>
+  </p>
+  <p>
+    <button id="saveBtn">Save</button>
+    <button id="resetBtn">Reset</button>
+  </p>
+</div>
+
+<table>
+  <thead>
+  <tr>
+    <th>Ім'я</th>
+    <th>Електронна пошта</th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+<script>
+  async function getContacts() {
+    const response = await fetch("/api/contacts", {
+      method: "GET",
+      headers: {"Accept": "application/json"}
+    });
+    if (response.ok === true) {
+      const contacts = await response.json();
+      const rows = document.querySelector("tbody");
+      contacts.forEach(contact => rows.append(row(contact)));
+    }
+  }
+
+  async function createContact(cntName, cntEmail) {
+
+    const response = await fetch("api/contacts", {
+      method: "POST",
+      headers: {"Accept": "application/json", "Content-Type": "application/json"},
+      body: JSON.stringify({
+        name: cntName,
+        email: cntEmail
+      })
+    });
+    if (response.ok === true) {
+      const contact = await response.json();
+      document.querySelector("tbody").append(row(contact));
+    } else {
+      const error = await response.json();
+      alert(error.message);
+    }
+  }
+
+  async function getContact(id) {
+    const response = await fetch(`/api/contacts/${id}`, {
+      method: "GET",
+      headers: {"Accept": "application/json"}
+    });
+    if (response.ok === true) {
+      const contact = await response.json();
+      document.getElementById("cntId").value = contact.id;
+      document.getElementById("cntName").value = contact.first_name;
+      document.getElementById("cntEmail").value = contact.email;
+    } else {
+      const error = await response.json();
+      alert(error.message);
+    }
+  }
+
+  async function editContact(cntId, cntName, cntEmail) {
+    const response = await fetch("api/contacts", {
+      method: "PUT",
+      headers: {"Accept": "application/json", "Content-Type": "application/json"},
+      body: JSON.stringify({
+        id: cntId,
+        name: cntName,
+        email: cntEmail
+      })
+    });
+    if (response.ok === true) {
+      const contact = await response.json();
+      document.querySelector(`tr[data-rowid='${contact.id}']`).replaceWith(row(contact));
+    } else {
+      const error = await response.json();
+      alert(error.message);
+    }
+  }
+
+  async function deleteContact(id) {
+    const response = await fetch(`/api/contacts/${id}`, {
+      method: "DELETE",
+      headers: {"Accept": "application/json"}
+    });
+    if (response.ok === true) {
+      const contact = await response.json();
+      document.querySelector(`tr[data-rowid='${contact.id}']`).remove();
+    } else {
+      const error = await response.json();
+      alert(error.message);
+    }
+  }
+
+
+  function row(contact) {
+
+    const tr = document.createElement("tr");
+    tr.setAttribute("data-rowid", contact.id);
+
+    const nameTd = document.createElement("td");
+    nameTd.append(contact.first_name);
+    tr.append(nameTd);
+
+    const ageTd = document.createElement("td");
+    ageTd.append(contact.email);
+    tr.append(ageTd);
+
+    const linksTd = document.createElement("td");
+
+    const editLink = document.createElement("button");
+    editLink.append("Изменить");
+    editLink.addEventListener("click", async () => await getContact(contact.id));
+    linksTd.append(editLink);
+
+    const removeLink = document.createElement("button");
+    removeLink.append("Удалить");
+    removeLink.addEventListener("click", async () => await deleteContact(contact.id));
+    linksTd.append(removeLink);
+
+    tr.appendChild(linksTd);
+
+    return tr;
+  }
+
+  document.getElementById("resetBtn").addEventListener("click", () =>  reset());
+
+  document.getElementById("saveBtn").addEventListener("click", async () => {
+
+    const id = document.getElementById("cntId").value;
+    const name = document.getElementById("cntName").value;
+    const email = document.getElementById("cntEmail").value;
+    if (id === "")
+      await createContact(name, email);
+    else
+      await editContact(id, name, email);
+    reset();
+  });
+
+  function reset() {
+    document.getElementById("cntId").value =
+      document.getElementById("cntName").value =
+        document.getElementById("cntEmail").value = "";
+  }
+
+getContacts();
+</script>
+</body>
+</html>
