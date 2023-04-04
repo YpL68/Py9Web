@@ -2,9 +2,44 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Title</title>
+  <title>SUPER_APP</title>
+  <link rel="icon" href="{{ url_for('static', path='/img/favicon.ico') }}" type="image/x-icon"/>
+  <link href="{{ url_for('static', path='/css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', path='/css/style.css') }}" rel="stylesheet">
 </head>
 <body>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+  <div class="navbar-brand">FREE ASSISTANT</div>
 
+  <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarsExampleDefault"
+      aria-controls="navbarsExampleDefault"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/">Contacts</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/">Notes</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+<main class="template" role="main">
+  {% block content %}
+  {% endblock %}
+</main>
+<script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js') }}"></script>
 </body>
 </html>

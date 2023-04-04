@@ -19,7 +19,6 @@ class Contact(BaseModel):
     first_name = Column(String(64), index=True, nullable=False)
     last_name = Column(String(64))
 
-
     @hybrid_property
     def full_name(self):
         return self.first_name + (f" {self.last_name}" if self.last_name else "")

@@ -1,12 +1,18 @@
-from fastapi import FastAPI, Depends, HTTPException, Body
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi import FastAPI, Depends, HTTPException, Body, Request
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from sqlalchemy import text
+from sqlalchemy import text, exc
 
 from src.database.db import get_db
 from src.database.models import Contact
 
 app = FastAPI()
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+templates = Jinja2Templates(directory="templates")
 
 
 @app.get("/api/healthchecker")
@@ -24,9 +30,10 @@ def healthchecker(db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Error connecting to the database")
 
 
-@app.get("/")
-async def main():
-    return FileResponse("templates/index.html")
+@app.get("/", response_class=HTMLResponse)
+async def root( request: Request, db: Session = Depends(get_db)):
+    contacts = db.query(Contact).all()
+    return templates.TemplateResponse("index.html", {"request": request, "filter_str": "1111", "contacts": contacts})
 
 
 @app.get("/api/contacts")
@@ -56,10 +63,19 @@ def edit_contact(data=Body(), db: Session = Depends(get_db)):
     contact = db.query(Contact).filter(Contact.id == data["id"]).first()
     if contact is None:
         return JSONResponse(status_code=404, content={"message": "Пользователь не найден"})
+    contact.first_name = data["first_name"]
+    contact.last_name = data["last_name"] if data["last_name"] else None
+    contact.birthday = data["birthday"] if data["birthday"] else None
     contact.email = data["email"]
-    contact.first_name = data["name"]
-    db.commit()
+    contact.address = data["address"] if data["address"] else None
+    try:
+        db.commit()
+    except Exception as err:
+        if db.in_transaction():
+            db.rollback()
+        return JSONResponse(status_code=500, content={"message": str(err)})
     db.refresh(contact)
+    print(contact.full_name)
     return contact
 
 
