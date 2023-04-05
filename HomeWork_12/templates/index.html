@@ -5,7 +5,7 @@
 <!-- Modal for updating a contact -->
 <div class="modal fade" id="EditContact" tabindex="-1" aria-labelledby="EditContactLabel" aria-hidden="true"
      data-bs-note_id="0">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="EditContactLabel">Adding a contact</h1>
@@ -51,7 +51,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Save changes</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         </div>
     </div>
@@ -62,7 +62,7 @@
 <!-- Modal for deleting a contact -->
 <div class="modal fade" id="DeleteContact" tabindex="-1" aria-labelledby="basicModalLabel"
      aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="basicModalLabel">Deleting a contact</h1>
@@ -114,7 +114,7 @@
           <tr data-rowid="{{ cnt.id }}">
             <td class="text-end">{{ cnt.id }}</td>
             <td class="text-start">{{ cnt.full_name }}</td>
-            <td class="text-start">{{ cnt.birthday }}</td>
+            <td class="text-start">{{ cnt.birthday|format_date }}</td>
             <td class="text-start">{{ cnt.email }}</td>
 
             <td>
@@ -177,19 +177,19 @@
     tr.setAttribute("data-rowid", contact.id);
     let td = document.createElement("td");
     td.className = "text-end";
-    td.innerText = contact.id;
+    td.innerHTML = contact.id;
     tr.append(td);
     td = document.createElement("td");
     td.className = "text-start";
-    td.innerText = contact.first_name + (contact.last_name ? " " + contact.last_name : "");
+    td.innerHTML = contact.first_name + (contact.last_name ? " " + contact.last_name : "");
     tr.append(td);
     td = document.createElement("td");
     td.className = "text-start";
-    td.innerText = contact.birthday;
+    td.innerHTML = contact.birthday.split("-").reverse().join(".");
     tr.append(td);
     td = document.createElement("td");
     td.className = "text-start";
-    td.innerText = contact.email;
+    td.innerHTML = contact.email;
     tr.append(td);
 
     td = document.createElement("td");

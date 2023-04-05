@@ -15,6 +15,15 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 
+def format_date(value):
+    if value is None:
+        return ""
+    return value.strftime("%d.%m.%Y")
+
+
+templates.env.filters["format_date"] = format_date
+
+
 @app.get("/api/healthchecker")
 def healthchecker(db: Session = Depends(get_db)):
     try:
@@ -31,7 +40,7 @@ def healthchecker(db: Session = Depends(get_db)):
 
 
 @app.get("/", response_class=HTMLResponse)
-async def root( request: Request, db: Session = Depends(get_db)):
+async def root(request: Request, db: Session = Depends(get_db)):
     contacts = db.query(Contact).all()
     return templates.TemplateResponse("index.html", {"request": request, "filter_str": "1111", "contacts": contacts})
 
