@@ -60,7 +60,12 @@ async def get_contact(id, db: Session = Depends(get_db)):
 
 @app.post("/api/contacts")
 def create_contact(data=Body(), db: Session = Depends(get_db)):
-    contact = Contact(first_name=data["name"], email=data["email"])
+    contact = Contact()
+    contact.first_name = data["first_name"]
+    contact.last_name = data["last_name"] if data["last_name"] else None
+    contact.birthday = data["birthday"] if data["birthday"] else None
+    contact.email = data["email"]
+    contact.address = data["address"] if data["address"] else None
     db.add(contact)
     db.commit()
     db.refresh(contact)
