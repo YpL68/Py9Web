@@ -1,13 +1,14 @@
 body,
 html {
   padding: 2rem 50px 50px;
-  font: 16px "Lucida Grande", Helvetica, Arial, sans-serif;
+  /*font: 16px "Lucida Grande", Helvetica, Arial, sans-serif;*/
   display: flex;
   height: 100%;
   flex-direction: column;
   align-items: stretch;
   justify-content: center;
   align-content: center;
+  background-color: #1A1C1F;
 }
 
 a {

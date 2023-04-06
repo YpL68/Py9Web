@@ -1,10 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
   <meta charset="UTF-8">
   <title>SUPER_APP</title>
+
+<!--  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"-->
+<!--        integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">-->
+
+<!--  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/fontawesome.min.css"-->
+<!--        integrity="sha384-QYIZto+st3yW+o8+5OHfT6S482Zsvz2WfOzpFSXMF9zqeLcFV0/wlZpMtyFcZALm"-->
+<!--        crossorigin="anonymous">-->
+
   <link rel="icon" href="{{ url_for('static', path='/img/favicon.ico') }}" type="image/x-icon"/>
   <link href="{{ url_for('static', path='/css/bootstrap.min.css') }}" rel="stylesheet">
+
+<!--  <link rel="stylesheet"-->
+<!--  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">-->
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<!--  <link rel="{{ url_for('static', path='/css/all.min.css') }}" rel="stylesheet" type="text/css">-->
   <link href="{{ url_for('static', path='/css/style.css') }}" rel="stylesheet">
 </head>
 <body>
@@ -30,9 +45,6 @@
       <li class="nav-item">
         <a class="nav-link" href="/">Contacts</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/">Notes</a>
-      </li>
     </ul>
   </div>
 </nav>
@@ -40,6 +52,6 @@
   {% block content %}
   {% endblock %}
 </main>
-<script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js') }}"></script>
 </body>
 </html>

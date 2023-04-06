@@ -11,49 +11,49 @@
         <h1 class="modal-title fs-5" id="EditContactLabel">Adding a contact</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-        <div class="modal-body">
-          <input type="hidden" id="cnt_id"/>
-          <div class="row">
-            <div class="col-md-6">
-              <label for="first_name" class="control-label"><span style="font-weight:bold">First name</span></label>
-              <input type="text" class="form-control" id="first_name" name="first_name" autocomplete="off"
-                     required value="">
-              <div class="invalid-feedback">
-                Enter a first name
-              </div>
-            </div>
-            <div class="col-md-6">
-              <label for="last_name" class="control-label"><span style="font-weight:bold">Last name</span></label>
-              <input type="text" class="form-control" id="last_name" name="last_name" autocomplete="off" value="">
+      <div class="modal-body">
+        <input type="hidden" id="cnt_id"/>
+        <div class="row">
+          <div class="col-md-6">
+            <label for="first_name" class="control-label"><span style="font-weight:bold">First name</span></label>
+            <input type="text" class="form-control" id="first_name" name="first_name" autocomplete="off"
+                   required value="">
+            <div class="invalid-feedback">
+              Enter a first name
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-4">
-              <label for="birthday" class="control-label"><span style="font-weight:bold">Birthday</span></label>
-              <input type="date" class="form-control" id="birthday" name="birthday" value="">
-            </div>
-            <div class="col-md-8">
-              <label for="email" class="control-label"><span style="font-weight:bold">Email</span></label>
-              <input type="email" class="form-control" id="email" name="email" autocomplete="off" value="">
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12">
-              <label for="phones" class="control-label"><span style="font-weight:bold">Phones</span></label>
-              <input type="text" class="form-control" id="phones" name="phones" autocomplete="off" value="">
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12">
-              <label for="address" class="control-label"><span style="font-weight:bold">Address</span></label>
-              <input type="text" class="form-control" id="address" name="address" autocomplete="off" value="">
-            </div>
+          <div class="col-md-6">
+            <label for="last_name" class="control-label"><span style="font-weight:bold">Last name</span></label>
+            <input type="text" class="form-control" id="last_name" name="last_name" autocomplete="off" value="">
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary">Save changes</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <div class="row">
+          <div class="col-md-4">
+            <label for="birthday" class="control-label"><span style="font-weight:bold">Birthday</span></label>
+            <input type="date" class="form-control" id="birthday" name="birthday" value="">
+          </div>
+          <div class="col-md-8">
+            <label for="email" class="control-label"><span style="font-weight:bold">Email</span></label>
+            <input type="email" class="form-control" id="email" name="email" autocomplete="off" value="">
+          </div>
         </div>
+        <div class="row">
+          <div class="col-md-12">
+            <label for="phones" class="control-label"><span style="font-weight:bold">Phones</span></label>
+            <input type="text" class="form-control" id="phones" name="phones" autocomplete="off" value="">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <label for="address" class="control-label"><span style="font-weight:bold">Address</span></label>
+            <input type="text" class="form-control" id="address" name="address" autocomplete="off" value="">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
     </div>
   </div>
 </div>
@@ -86,18 +86,26 @@
   <div class="row">
     <div class="col-1"></div>
     <div class="col-10">
-      <h1>{{ title }}</h1>
-
-      <nav class="navbar">
-        <div class="d-flex justify-content-start">
-          <form class="d-flex" action="/contacts/" method="post">
-            <input class="form-control me-2" id="filter_str" type="search" name="filter_str"
-                   placeholder="Search" aria-label="Search" value="{{ filter_str }}">
-            <button class="btn btn-outline-success" type="submit">Refresh</button>
-          </form>
-        </div>
-      </nav>
-
+      <div class="container">
+        <h1>Contacts</h1>
+        <nav class="navbar">
+          <div class="d-flex justify-content-start">
+            <form class="d-flex" action="/contacts/" method="post">
+              <input class="form-control me-2" id="filter_str" type="search" name="filter_str"
+                     placeholder="Search" aria-label="Search" value="{{ filter_str }}">
+              <button class="btn btn-outline-success text-nowrap" type="submit">
+                <span class="btn-label"><i class="fa fa-refresh"></i></span> Refresh
+              </button>
+            </form>
+          </div>
+          <div class='d-flex justify-content-end'>
+            <button class="btn btn-outline-primary text-nowrap">
+<!--              <span class="btn-label"><i class="fa fa-contact-card"></i></span> Add contact-->
+              <span class="btn-label"><i class="fa fa-user-plus"></i></span> Add contact
+            </button>
+          </div>
+        </nav>
+      </div>
       <div class="container mb-3 mt-2">
         <table class="table table-bordered table-striped" id="ContactsTable">
           <thead class="table-dark">
@@ -118,18 +126,22 @@
             <td class="text-start">{{ cnt.email }}</td>
 
             <td>
-              <button type="button" class="btn btn-outline-primary btn-edit btn-sm"
+              <button type="button" class="btn btn-outline-secondary btn-edit btn-sm"
                       data-bs-toggle="modal"
                       data-bs-target="#EditContact"
                       data-bs-cnt_id="{{ cnt.id }}"
-              ></button>
+              >
+                <span class="btn-label"><i class="fa fa-user-edit"></i></span>
+              </button>
             </td>
             <td>
-              <button type="button" class="btn btn-outline-danger btn-delete btn-sm"
+              <button type="button" class="btn btn-outline-secondary btn-delete btn-sm"
                       data-bs-toggle="modal"
                       data-bs-target="#DeleteContact"
                       data-bs-cnt_id="{{ cnt.id }}"
-              ></button>
+              >
+                <span class="btn-label"><i class="fa fa-user-minus"></i></span>
+              </button>
             </td>
           </tr>
           {% endfor %}
@@ -312,7 +324,7 @@
     const submit_btn = del_form.querySelector(".btn-danger")
     const cancel_btn = del_form.querySelector(".btn-secondary")
 
-    submit_btn.onclick = async function() {
+    submit_btn.onclick = async function () {
       const result = await deleteContact(cnt_id);
       if (result)
         cancel_btn.click();
@@ -330,7 +342,7 @@
     const submit_btn = edit_form.querySelector(".btn-primary");
     const cancel_btn = edit_form.querySelector(".btn-secondary");
 
-    submit_btn.onclick = async function() {
+    submit_btn.onclick = async function () {
       const result = await editContact();
       if (result)
         cancel_btn.click();
