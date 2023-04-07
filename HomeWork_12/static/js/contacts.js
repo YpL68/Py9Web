@@ -1,3 +1,24 @@
+async function local_sort_table(col_num, type, id) {
+  let elem = document.getElementById(id);
+  let tbody = elem.querySelector("tbody");
+  let rows_array = Array.from(tbody.rows);
+  let compare;
+  switch(type) {
+    case "number":
+      compare = function(row_a, row_b) {
+        return row_a.cells[col_num].innerHTML - row_b.cells[col_num].innerHTML;
+      }
+    break;
+    case "string":
+      compare = function(row_a, row_b) {
+        return row_a.cells[col_num].innerHTML > row_b.cells[col_num].innerHTML ? 1 : -1;
+      }
+    break;
+  }
+  rows_array.sort(compare);
+  tbody.append(...rows_array);
+}
+
 function new_table_row(contact) {
   let tr = document.createElement("tr");
   tr.setAttribute("data-rowid", contact.id);
@@ -24,8 +45,10 @@ function new_table_row(contact) {
   td = document.createElement("td");
 
   let button = document.createElement("button");
-  button.className = "btn btn-outline-secondary btn-edit btn-sm";
+  button.className = "btn btn-outline-secondary btn-edit";
   button.innerHTML = "<span class=\'btn-label\'><i class=\'fa fa-user-edit\'></i></span>";
+  button.setAttribute("style", "--bs-btn-padding-y: .2rem; --bs-btn-padding-x: .5rem; " +
+    "--bs-btn-font-size: .75rem;");
   button.setAttribute("data-bs-toggle", "modal");
   button.setAttribute("data-bs-target", "#EditContact");
   button.setAttribute("data-bs-cnt_id", contact.id);
@@ -34,8 +57,10 @@ function new_table_row(contact) {
 
   td = document.createElement("td");
   button = document.createElement("button");
-  button.className = "btn btn-outline-secondary btn-delete btn-sm";
+  button.className = "btn btn-outline-secondary btn-delete";
   button.innerHTML = "<span class=\'btn-label\'><i class=\'fa fa-user-minus\'></i></span>";
+  button.setAttribute("style", "--bs-btn-padding-y: .2rem; --bs-btn-padding-x: .5rem; " +
+    "--bs-btn-font-size: .75rem;");
   button.setAttribute("data-bs-toggle", "modal");
   button.setAttribute("data-bs-target", "#DeleteContact");
   button.setAttribute("data-bs-cnt_id", contact.id);
@@ -43,6 +68,22 @@ function new_table_row(contact) {
   tr.append(td);
 
   return tr;
+}
+
+async function getContacts() {
+  const response = await fetch("/api/contacts", {
+    method: "GET",
+    headers: {"Accept": "application/json"}
+  });
+  if (response.ok === true) {
+    const contacts = await response.json();
+    const rows = document.querySelector("tbody");
+
+    while (rows.rows.length)
+      rows.deleteRow(0);
+
+    contacts.forEach(contact => rows.append(new_table_row(contact)));
+  }
 }
 
 async function getContact(id) {
@@ -129,3 +170,55 @@ async function deleteContact(id) {
   }
   return true;
 }
+
+function DeleteContactOnShow() {
+  const del_form = document.getElementById("DeleteContact")
+
+  del_form.addEventListener("show.bs.modal", async event => {
+    const button = event.relatedTarget
+    const cnt_id = button.getAttribute("data-bs-cnt_id")
+    const submit_btn = del_form.querySelector(".btn-danger")
+    const cancel_btn = del_form.querySelector(".btn-secondary")
+
+    submit_btn.onclick = async function () {
+      const result = await deleteContact(cnt_id);
+      if (result)
+        cancel_btn.click();
+    };
+  })
+}
+
+function EditContactOnShow() {
+  const edit_form = document.getElementById("EditContact")
+
+  edit_form.addEventListener("show.bs.modal", async event => {
+    const button = event.relatedTarget;
+    const cnt_id = button.getAttribute("data-bs-cnt_id");
+
+    if (cnt_id === "") {
+      document.getElementById("cnt_id").value = "";
+      document.getElementById("first_name").value = "";
+      document.getElementById("last_name").value = "";
+      document.getElementById("birthday").value = "";
+      document.getElementById("email").value = "";
+      document.getElementById("address").value = "";
+    }
+    else
+      await getContact(cnt_id);
+
+    const submit_btn = edit_form.querySelector(".btn-primary");
+    const cancel_btn = edit_form.querySelector(".btn-secondary");
+
+    submit_btn.onclick = async function () {
+      let result;
+      if (cnt_id === "")
+        result = await createContact();
+      else
+        result = await editContact();
+      if (result)
+        cancel_btn.click();
+    };
+  })
+}
+
+

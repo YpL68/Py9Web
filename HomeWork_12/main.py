@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, Body, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -40,14 +40,19 @@ def healthchecker(db: Session = Depends(get_db)):
 
 
 @app.get("/", response_class=HTMLResponse)
-async def root(request: Request, db: Session = Depends(get_db)):
-    contacts = db.query(Contact).all()
-    return templates.TemplateResponse("index.html", {"request": request, "filter_str": "1111", "contacts": contacts})
+async def root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
+@app.get("/contacts", response_class=HTMLResponse)
+async def contacts(request: Request, db: Session = Depends(get_db)):
+    data = db.query(Contact).all()
+    return templates.TemplateResponse("contacts.html", {"request": request, "filter_str": "", "contacts": data})
 
 
 @app.get("/api/contacts")
 async def get_contacts(db: Session = Depends(get_db)):
-    return db.query(Contact).all()
+    return db.query(Contact).order_by(Contact.first_name, Contact.last_name).all()
 
 
 @app.get("/api/contacts/{id}")
