@@ -49,9 +49,11 @@ function new_table_row(contact) {
   button.innerHTML = "<span class=\'btn-label\'><i class=\'fa fa-user-edit\'></i></span>";
   button.setAttribute("style", "--bs-btn-padding-y: .2rem; --bs-btn-padding-x: .5rem; " +
     "--bs-btn-font-size: .75rem;");
-  button.setAttribute("data-bs-toggle", "modal");
-  button.setAttribute("data-bs-target", "#EditContact");
+  button.setAttribute("data-bs-action", "edit");
   button.setAttribute("data-bs-cnt_id", contact.id);
+  button.onclick = async function() {
+    await EditContactShow(contact.id);
+  }
   td.append(button);
   tr.append(td);
 
@@ -61,9 +63,12 @@ function new_table_row(contact) {
   button.innerHTML = "<span class=\'btn-label\'><i class=\'fa fa-user-minus\'></i></span>";
   button.setAttribute("style", "--bs-btn-padding-y: .2rem; --bs-btn-padding-x: .5rem; " +
     "--bs-btn-font-size: .75rem;");
-  button.setAttribute("data-bs-toggle", "modal");
-  button.setAttribute("data-bs-target", "#DeleteContact");
+  button.setAttribute("data-bs-action", "delete");
   button.setAttribute("data-bs-cnt_id", contact.id);
+  button.onclick = async function() {
+    await DeleteContactShow(contact.id);
+  }
+
   td.append(button);
   tr.append(td);
 
@@ -87,30 +92,18 @@ async function getContacts() {
 }
 
 async function getContact(id) {
-  const response = await fetch(`/api/contacts/${id}`, {
+  return(await fetch(`/api/contacts/${id}`, {
     method: "GET",
     headers: {"Accept": "application/json"}
-  });
-  if (response.ok === true) {
-    const contact = await response.json();
-    document.getElementById("cnt_id").value = contact.id;
-    document.getElementById("first_name").value = contact.first_name;
-    document.getElementById("last_name").value = contact.last_name;
-    document.getElementById("birthday").value = contact.birthday;
-    document.getElementById("email").value = contact.email;
-    document.getElementById("address").value = contact.address;
-  } else {
-    const error = await response.json();
-    alert(error.message);
-  }
+  }));
 }
 
-async function createContact() {
+async function editContact(cnt_id) {
   const response = await fetch("api/contacts", {
-    method: "POST",
+    method: (cnt_id === "" ? "POST" : "PUT"),
     headers: {"Accept": "application/json", "Content-Type": "application/json"},
     body: JSON.stringify({
-      id: document.getElementById("cnt_id").value,
+      id: cnt_id,
       first_name: document.getElementById("first_name").value,
       last_name: document.getElementById("last_name").value,
       birthday: document.getElementById("birthday").value,
@@ -120,33 +113,12 @@ async function createContact() {
   });
   if (response.ok === true) {
     const contact = await response.json();
-    document.querySelector("tbody").append(new_table_row(contact));
-  } else {
-    const error = await response.json();
-    alert(error.message);
-    return false;
+    if (cnt_id === "")
+      document.querySelector("tbody").append(new_table_row(contact));
+    else
+      document.querySelector(`tr[data-rowid='${contact.id}']`).replaceWith(new_table_row(contact));
   }
-
-  return true;
-}
-
-async function editContact() {
-  const response = await fetch("api/contacts", {
-    method: "PUT",
-    headers: {"Accept": "application/json", "Content-Type": "application/json"},
-    body: JSON.stringify({
-      id: document.getElementById("cnt_id").value,
-      first_name: document.getElementById("first_name").value,
-      last_name: document.getElementById("last_name").value,
-      birthday: document.getElementById("birthday").value,
-      email: document.getElementById("email").value,
-      address: document.getElementById("address").value
-    })
-  });
-  if (response.ok === true) {
-    const contact = await response.json();
-    document.querySelector(`tr[data-rowid='${contact.id}']`).replaceWith(new_table_row(contact));
-  } else {
+  else {
     const error = await response.json();
     alert(error.message);
     return false;
@@ -171,54 +143,48 @@ async function deleteContact(id) {
   return true;
 }
 
-function DeleteContactOnShow() {
-  const del_form = document.getElementById("DeleteContact")
+async function DeleteContactShow(cnt_id) {
+  const modal_form = document.getElementById("DeleteContact")
+  const modal = new bootstrap.Modal(modal_form);
 
-  del_form.addEventListener("show.bs.modal", async event => {
-    const button = event.relatedTarget
-    const cnt_id = button.getAttribute("data-bs-cnt_id")
-    const submit_btn = del_form.querySelector(".btn-danger")
-    const cancel_btn = del_form.querySelector(".btn-secondary")
-
-    submit_btn.onclick = async function () {
-      const result = await deleteContact(cnt_id);
-      if (result)
-        cancel_btn.click();
-    };
-  })
+  const submit_btn = modal_form.querySelector(".btn-danger");
+  submit_btn.onclick = async function () {
+    if (await deleteContact(cnt_id))
+      modal.hide();
+  };
+  modal.show();
 }
 
-function EditContactOnShow() {
-  const edit_form = document.getElementById("EditContact")
-
-  edit_form.addEventListener("show.bs.modal", async event => {
-    const button = event.relatedTarget;
-    const cnt_id = button.getAttribute("data-bs-cnt_id");
-
-    if (cnt_id === "") {
-      document.getElementById("cnt_id").value = "";
-      document.getElementById("first_name").value = "";
-      document.getElementById("last_name").value = "";
-      document.getElementById("birthday").value = "";
-      document.getElementById("email").value = "";
-      document.getElementById("address").value = "";
+async function EditContactShow(cnt_id) {
+  const modal_form = document.getElementById("EditContact")
+  const modal = new bootstrap.Modal(modal_form);
+  if (cnt_id === "") {
+    modal_form.querySelector("#first_name").value = "";
+    modal_form.querySelector("#last_name").value = "";
+    modal_form.querySelector("#birthday").value = "";
+    modal_form.querySelector("#email").value = "";
+    modal_form.querySelector("#address").value = "";
+  }
+  else{
+    const response = await getContact(cnt_id);
+    if (response.ok === true) {
+      const contact = await response.json();
+      modal_form.querySelector("#first_name").value = contact.first_name;
+      modal_form.querySelector("#last_name").value = contact.last_name;
+      modal_form.querySelector("#birthday").value = contact.birthday;
+      modal_form.querySelector("#email").value = contact.email;
+      modal_form.querySelector("#address").value = contact.address;
+    } else {
+      const error = await response.json();
+      alert(error.message);
+      return;
     }
-    else
-      await getContact(cnt_id);
+  }
 
-    const submit_btn = edit_form.querySelector(".btn-primary");
-    const cancel_btn = edit_form.querySelector(".btn-secondary");
-
-    submit_btn.onclick = async function () {
-      let result;
-      if (cnt_id === "")
-        result = await createContact();
-      else
-        result = await editContact();
-      if (result)
-        cancel_btn.click();
-    };
-  })
+  const submit_btn = modal_form.querySelector(".btn-primary");
+  submit_btn.onclick = async function () {
+    if (await editContact(cnt_id))
+      modal.hide();
+  };
+  modal.show();
 }
-
-

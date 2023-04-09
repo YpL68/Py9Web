@@ -1,12 +1,13 @@
 from fastapi import FastAPI, Depends, HTTPException, Body, Request
-from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from sqlalchemy import text, exc
+from sqlalchemy import text
 
 from src.database.db import get_db
 from src.database.models import Contact
+from src.schemas import ContactResponse
 
 app = FastAPI()
 
@@ -22,6 +23,14 @@ def format_date(value):
 
 
 templates.env.filters["format_date"] = format_date
+
+
+@app.exception_handler(ValueError)
+async def value_error_exception_handler(request: Request, exc: ValueError):
+    return JSONResponse(
+        status_code=400,
+        content={"message": f"{request.url}: {str(exc)}"}
+    )
 
 
 @app.get("/api/healthchecker")
@@ -55,9 +64,9 @@ async def get_contacts(db: Session = Depends(get_db)):
     return db.query(Contact).order_by(Contact.first_name, Contact.last_name).all()
 
 
-@app.get("/api/contacts/{id}")
-async def get_contact(id, db: Session = Depends(get_db)):
-    contact = db.query(Contact).filter(Contact.id == id).first()
+@app.get("/api/contacts/{cnt_id}", response_model=ContactResponse)
+async def get_contact(cnt_id, db: Session = Depends(get_db)):
+    contact = db.query(Contact).filter(Contact.id == cnt_id).first()
     if contact is None:
         return JSONResponse(status_code=404, content={"message": "Пользователь не найден"})
     return contact
@@ -94,13 +103,12 @@ def edit_contact(data=Body(), db: Session = Depends(get_db)):
             db.rollback()
         return JSONResponse(status_code=500, content={"message": str(err)})
     db.refresh(contact)
-    print(contact.full_name)
     return contact
 
 
-@app.delete("/api/contacts/{id}")
-def delete_contact(id, db: Session = Depends(get_db)):
-    contact = db.query(Contact).filter(Contact.id == id).first()
+@app.delete("/api/contacts/{cnt_id}")
+def delete_contact(cnt_id, db: Session = Depends(get_db)):
+    contact = db.query(Contact).filter(Contact.id == cnt_id).first()
 
     if contact is None:
         return JSONResponse(status_code=404, content={"message": "Пользователь не найден"})

@@ -98,8 +98,7 @@
           </div>
           <div class='d-flex justify-content-end'>
             <button class="btn btn-outline-primary text-nowrap"
-                      data-bs-toggle="modal"
-                      data-bs-target="#EditContact"
+                    onclick="EditContactShow('')"
                       data-bs-cnt_id="">
               <span class="btn-label"><i class="fa fa-user-plus"></i></span> Add contact
             </button>
@@ -131,20 +130,18 @@
             <td class="text-start">{{ cnt.email }}</td>
 
             <td>
-              <button type="button" class="btn btn-outline-secondary btn-edit"
+              <button type="button" class="btn btn-outline-secondary btn-action"
                       style="--bs-btn-padding-y: .2rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;"
-                      data-bs-toggle="modal"
-                      data-bs-target="#EditContact"
+                      data-bs-action="edit"
                       data-bs-cnt_id="{{ cnt.id }}"
               >
                 <span class="btn-label"><i class="fa fa-user-edit"></i></span>
               </button>
             </td>
             <td>
-              <button type="button" class="btn btn-outline-secondary btn-delete"
+              <button type="button" class="btn btn-outline-secondary btn-action"
                       style="--bs-btn-padding-y: .2rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;"
-                      data-bs-toggle="modal"
-                      data-bs-target="#DeleteContact"
+                      data-bs-action="delete"
                       data-bs-cnt_id="{{ cnt.id }}"
               >
                 <span class="btn-label"><i class="fa fa-user-minus"></i></span>
@@ -169,23 +166,32 @@
     switch(data_sorted) {
       case "0":
         e.target.setAttribute("data-bs-sort_order", "1");
-        e.target.innerHTML = "<i class=\"fa fa-up-long\"></i>" + e.target.innerText;
+        e.target.innerHTML = "<i class='fa fa-up-long'></i>" + e.target.innerText;
       break;
       case "1":
         e.target.setAttribute("data-bs-sort_order", "0");
-        e.target.innerHTML = "<i class=\"fa fa-down-long\"></i>" + e.target.innerText;
+        e.target.innerHTML = "<i class='fa fa-down-long'></i>" + e.target.innerText;
       break;
       default: return;
     }
-
-    // if (e.target)
-    // e.target.innerHTML = "<i class=\"fa fa-up-long\"></i>" + e.target.innerText;
 
     let th = e.target;
     local_sort_table(th.cellIndex, th.dataset.type, "ContactsTable");
   }
 
-  DeleteContactOnShow();
-  EditContactOnShow();
+  let edit_buttons = document.querySelectorAll(".btn-action");
+  for (let btn of edit_buttons) {
+    if (btn.getAttribute("data-bs-action") === "edit") {
+      btn.onclick = async function () {
+        await EditContactShow(btn.getAttribute("data-bs-cnt_id"));
+      }
+    }
+    else {
+      btn.onclick = async function () {
+        await DeleteContactShow(btn.getAttribute("data-bs-cnt_id"));
+      }
+    }
+  }
+
 </script>
 {% endblock %}
