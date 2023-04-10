@@ -23,7 +23,7 @@ class Contact(BaseModel):
     def full_name(self):
         return self.first_name + (f" {self.last_name}" if self.last_name else "")
 
-    email = Column(String(64), unique=True)
+    email = Column(String(64), unique=True, nullable=False)
     birthday = Column(Date)
     address = Column(String(128))
     phones = relationship("Phone", cascade="all, delete-orphan", back_populates="contact")
