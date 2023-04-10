@@ -7,14 +7,14 @@ from src.functions import sanitize_phone_num
 Base = declarative_base()
 
 
-class BaseModel(Base):
+class MyBaseModel(Base):
     __abstract__ = True
     id = Column(Integer, nullable=False, primary_key=True, autoincrement=True)
     created_on = Column(DateTime, nullable=False, default=func.now())
     updated_on = Column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
 
 
-class Contact(BaseModel):
+class Contact(MyBaseModel):
     __tablename__ = "contacts"
     first_name = Column(String(64), index=True, nullable=False)
     last_name = Column(String(64))
@@ -25,11 +25,12 @@ class Contact(BaseModel):
 
     email = Column(String(64), unique=True, nullable=False)
     birthday = Column(Date)
+
     address = Column(String(128))
     phones = relationship("Phone", cascade="all, delete-orphan", back_populates="contact")
 
 
-class Phone(BaseModel):
+class Phone(MyBaseModel):
     __tablename__ = "phones"
     contact_id = Column(None, ForeignKey("contacts.id", ondelete="CASCADE"), nullable=False)
     phone_num = Column(String(12), nullable=False, index=True, unique=True)

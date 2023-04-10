@@ -91,6 +91,29 @@ async function getContacts() {
   }
 }
 
+function phones_to_str (contact_phones) {
+  let phones_str = "";
+  if (contact_phones) {
+    let phone_list = [];
+    for (let phone of contact_phones) {
+      phone_list.push(phone["phone_num"])
+    }
+    phones_str = phone_list.join(", ");
+  }
+  return phones_str;
+}
+
+function str_to_phones (phones_str) {
+  const phones = [];
+  const phone_list = phones_str.split(",").map(x => x.trim());
+  for (let phone of phone_list) {
+    if (phone) {
+      phones.push({"phone_num": phone})
+    }
+  }
+  return phones;
+}
+
 async function getContact(id) {
   return(await fetch(`/api/contacts/${id}`, {
     method: "GET",
@@ -108,6 +131,7 @@ async function editContact(cnt_id) {
       last_name: document.getElementById("last_name").value,
       birthday: document.getElementById("birthday").value,
       email: document.getElementById("email").value,
+      phones: str_to_phones(document.getElementById("phones").value),
       address: document.getElementById("address").value
     })
   });
@@ -173,6 +197,7 @@ async function EditContactShow(cnt_id) {
       modal_form.querySelector("#last_name").value = contact.last_name;
       modal_form.querySelector("#birthday").value = contact.birthday;
       modal_form.querySelector("#email").value = contact.email;
+      modal_form.querySelector("#phones").value = phones_to_str(contact.phones);
       modal_form.querySelector("#address").value = contact.address;
     } else {
       const error = await response.json();

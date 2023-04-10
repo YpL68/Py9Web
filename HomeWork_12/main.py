@@ -72,6 +72,14 @@ async def get_contact(cnt_id, db: Session = Depends(get_db)):
     return contact
 
 
+# @app.get("/api/contacts/{cnt_id}")
+# async def get_contact(cnt_id, db: Session = Depends(get_db)):
+#     contact = db.query(Contact.id, Contact.phones).filter(Contact.id == cnt_id).first()
+#     if contact is None:
+#         return JSONResponse(status_code=404, content={"message": "Пользователь не найден"})
+#     return contact
+
+
 @app.post("/api/contacts")
 def create_contact(data=Body(), db: Session = Depends(get_db)):
     contact = Contact()

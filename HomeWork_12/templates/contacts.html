@@ -40,7 +40,8 @@
         <div class="row">
           <div class="col-md-12">
             <label for="phones" class="control-label"><span style="font-weight:bold">Phones</span></label>
-            <input type="text" class="form-control" id="phones" name="phones" autocomplete="off" value="">
+            <input type="text" class="form-control" id="phones" name="phones"
+                   autocomplete="off" value="" oninput="numberOnly(this)">
           </div>
         </div>
         <div class="row">
@@ -132,8 +133,8 @@
             <td>
               <button type="button" class="btn btn-outline-secondary btn-action"
                       style="--bs-btn-padding-y: .2rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;"
-                      data-bs-action="edit"
-                      data-bs-cnt_id="{{ cnt.id }}"
+                      name="{{ cnt.id }}"
+                      onclick="EditContactShow(this.name)"
               >
                 <span class="btn-label"><i class="fa fa-user-edit"></i></span>
               </button>
@@ -157,6 +158,15 @@
   </div>
 </div>
 <script>
+  function my_func(cnt_id) {
+    alert(cnt_id);
+  }
+
+  const numberOnly = e => {
+    const value = e.value;
+    e.value = value.replace(/\D/g, '');
+  }
+
 
   const contact_table = document.getElementById("ContactsTable");
 
@@ -179,19 +189,19 @@
     local_sort_table(th.cellIndex, th.dataset.type, "ContactsTable");
   }
 
-  let edit_buttons = document.querySelectorAll(".btn-action");
-  for (let btn of edit_buttons) {
-    if (btn.getAttribute("data-bs-action") === "edit") {
-      btn.onclick = async function () {
-        await EditContactShow(btn.getAttribute("data-bs-cnt_id"));
-      }
-    }
-    else {
-      btn.onclick = async function () {
-        await DeleteContactShow(btn.getAttribute("data-bs-cnt_id"));
-      }
-    }
-  }
+  // let edit_buttons = document.querySelectorAll(".btn-action");
+  // for (let btn of edit_buttons) {
+  //   if (btn.getAttribute("data-bs-action") === "edit") {
+  //     btn.onclick = async function () {
+  //       await EditContactShow(btn.getAttribute("data-bs-cnt_id"));
+  //     }
+  //   }
+  //   else {
+  //     btn.onclick = async function () {
+  //       await DeleteContactShow(btn.getAttribute("data-bs-cnt_id"));
+  //     }
+  //   }
+  // }
 
 </script>
 {% endblock %}
