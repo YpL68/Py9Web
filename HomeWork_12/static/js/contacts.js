@@ -1,22 +1,22 @@
 async function local_sort_table(col_num, type, id) {
-  let elem = document.getElementById(id);
-  let tbody = elem.querySelector("tbody");
-  let rows_array = Array.from(tbody.rows);
-  let compare;
-  switch(type) {
-    case "number":
-      compare = function(row_a, row_b) {
-        return row_a.cells[col_num].innerHTML - row_b.cells[col_num].innerHTML;
-      }
-    break;
-    case "string":
-      compare = function(row_a, row_b) {
-        return row_a.cells[col_num].innerHTML > row_b.cells[col_num].innerHTML ? 1 : -1;
-      }
-    break;
-  }
-  rows_array.sort(compare);
-  tbody.append(...rows_array);
+  // let elem = document.getElementById(id);
+  // let tbody = elem.querySelector("tbody");
+  // let rows_array = Array.from(tbody.rows);
+  // let compare;
+  // switch(type) {
+  //   case "number":
+  //     compare = function(row_a, row_b) {
+  //       return row_a.cells[col_num].innerHTML - row_b.cells[col_num].innerHTML;
+  //     }
+  //   break;
+  //   case "string":
+  //     compare = function(row_a, row_b) {
+  //       return row_a.cells[col_num].innerHTML > row_b.cells[col_num].innerHTML ? 1 : -1;
+  //     }
+  //   break;
+  // }
+  // rows_array.sort(compare);
+  // tbody.append(...rows_array);
 }
 
 function new_table_row(contact) {
@@ -28,7 +28,8 @@ function new_table_row(contact) {
   tr.append(td);
   td = document.createElement("td");
   td.className = "text-start";
-  td.innerHTML = contact.first_name + (contact.last_name ? " " + contact.last_name : "");
+  // td.innerHTML = contact.first_name + (contact.last_name ? " " + contact.last_name : "");
+  td.innerHTML = contact.full_name;
   tr.append(td);
   td = document.createElement("td");
   td.className = "text-start";
@@ -49,8 +50,6 @@ function new_table_row(contact) {
   button.innerHTML = "<span class=\'btn-label\'><i class=\'fa fa-user-edit\'></i></span>";
   button.setAttribute("style", "--bs-btn-padding-y: .2rem; --bs-btn-padding-x: .5rem; " +
     "--bs-btn-font-size: .75rem;");
-  button.setAttribute("data-bs-action", "edit");
-  button.setAttribute("data-bs-cnt_id", contact.id);
   button.onclick = async function() {
     await EditContactShow(contact.id);
   }
@@ -63,8 +62,6 @@ function new_table_row(contact) {
   button.innerHTML = "<span class=\'btn-label\'><i class=\'fa fa-user-minus\'></i></span>";
   button.setAttribute("style", "--bs-btn-padding-y: .2rem; --bs-btn-padding-x: .5rem; " +
     "--bs-btn-font-size: .75rem;");
-  button.setAttribute("data-bs-action", "delete");
-  button.setAttribute("data-bs-cnt_id", contact.id);
   button.onclick = async function() {
     await DeleteContactShow(contact.id);
   }
@@ -168,6 +165,7 @@ async function deleteContact(id) {
 }
 
 async function DeleteContactShow(cnt_id) {
+  alert(cnt_id);
   const modal_form = document.getElementById("DeleteContact")
   const modal = new bootstrap.Modal(modal_form);
 

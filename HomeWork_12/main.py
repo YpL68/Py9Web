@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import FastAPI, Depends, HTTPException, Body, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -7,7 +9,7 @@ from sqlalchemy import text
 
 from src.database.db import get_db
 from src.database.models import Contact
-from src.schemas import ContactResponse
+from src.schemas import ContactResponse, ContactListResponse
 
 app = FastAPI()
 
@@ -55,13 +57,21 @@ async def root(request: Request):
 
 @app.get("/contacts", response_class=HTMLResponse)
 async def contacts(request: Request, db: Session = Depends(get_db)):
-    data = db.query(Contact).all()
+    data = db.query(Contact.id,
+                    Contact.full_name,
+                    Contact.birthday,
+                    Contact.email)\
+        .order_by(Contact.first_name, Contact.last_name).all()
     return templates.TemplateResponse("contacts.html", {"request": request, "filter_str": "", "contacts": data})
 
 
-@app.get("/api/contacts")
+@app.get("/api/contacts", response_model=List[ContactListResponse])
 async def get_contacts(db: Session = Depends(get_db)):
-    return db.query(Contact).order_by(Contact.first_name, Contact.last_name).all()
+    return db.query(Contact.id,
+                    Contact.full_name,
+                    Contact.birthday,
+                    Contact.email)\
+        .order_by(Contact.first_name, Contact.last_name).all()
 
 
 @app.get("/api/contacts/{cnt_id}", response_model=ContactResponse)
