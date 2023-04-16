@@ -123,7 +123,6 @@ async function editContact(cnt_id) {
     method: (cnt_id === "" ? "POST" : "PUT"),
     headers: {"Accept": "application/json", "Content-Type": "application/json"},
     body: JSON.stringify({
-      id: cnt_id,
       first_name: document.getElementById("first_name").value,
       last_name: document.getElementById("last_name").value,
       birthday: document.getElementById("birthday").value,

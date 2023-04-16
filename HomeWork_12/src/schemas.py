@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field, EmailStr
 from typing import Optional, List
 
 
-class PhoneResponse(BaseModel):
+class PhoneOutput(BaseModel):
     phone_num: str
 
     class Config:
@@ -16,19 +16,17 @@ class PhoneResponse(BaseModel):
         }
 
 
-class Contact(BaseModel):
-    id: int
+class ContactInput(BaseModel):
     first_name: str = Field()
     last_name: Optional[str]
     email: EmailStr
     birthday: Optional[date] = None
     address: Optional[str] = None
-    phones: Optional[List[PhoneResponse]] = []
+    phones: Optional[List[PhoneOutput]] = []
 
     class Config:
         schema_extra = {
             "example": {
-                "id": 1,
                 "first_name": "Ben",
                 "last_name": "Smith",
                 "email": "example@example.ua",
@@ -39,14 +37,14 @@ class Contact(BaseModel):
         }
 
 
-class ContactResponse(BaseModel):
+class ContactOutput(BaseModel):
     id: int
     first_name: str
     last_name: Optional[str]
     email: str
     birthday: Optional[date] = None
     address: Optional[str] = None
-    phones: Optional[List[PhoneResponse]] = []
+    phones: Optional[List[PhoneOutput]] = []
 
     class Config:
         orm_mode = True
@@ -63,7 +61,7 @@ class ContactResponse(BaseModel):
         }
 
 
-class ContactListResponse(BaseModel):
+class ContactInListOutput(BaseModel):
     id: int
     full_name: str
     email: str
