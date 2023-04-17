@@ -72,8 +72,14 @@ function new_table_row(contact) {
   return tr;
 }
 
-async function getContacts() {
-  const response = await fetch("/api/contacts", {
+async function getContacts(filter_type=0) {
+  let filter_str;
+  if (filter_type === 1)
+    filter_str = document.getElementById("filter_str").value;
+
+  const url_str = `/api/contacts/?filter_type=${filter_type}&filter_str=${filter_str}`
+
+  const response = await fetch(url_str, {
     method: "GET",
     headers: {"Accept": "application/json"}
   });
@@ -85,6 +91,10 @@ async function getContacts() {
       rows.deleteRow(0);
 
     contacts.forEach(contact => rows.append(new_table_row(contact)));
+  }
+  else{
+    const error = await response.json();
+    alert(error.message);
   }
 }
 
@@ -118,17 +128,22 @@ async function getContact(id) {
   }));
 }
 
+
 async function editContact(cnt_id) {
-  const response = await fetch("api/contacts", {
+  const birthday = document.getElementById("birthday").value;
+  const last_name = document.getElementById("last_name").value;
+  const address = document.getElementById("address").value;
+
+  const response = await fetch(`/api/contacts/${cnt_id}`, {
     method: (cnt_id === "" ? "POST" : "PUT"),
     headers: {"Accept": "application/json", "Content-Type": "application/json"},
     body: JSON.stringify({
       first_name: document.getElementById("first_name").value,
-      last_name: document.getElementById("last_name").value,
-      birthday: document.getElementById("birthday").value,
+      last_name: last_name ? last_name : null,
+      birthday: birthday ? birthday : null,
       email: document.getElementById("email").value,
       phones: str_to_phones(document.getElementById("phones").value),
-      address: document.getElementById("address").value
+      address: address ? address : null
     })
   });
   if (response.ok === true) {
@@ -153,8 +168,7 @@ async function deleteContact(id) {
     headers: {"Accept": "application/json"}
   });
   if (response.ok === true) {
-    const contact = await response.json();
-    document.querySelector(`tr[data-rowid='${contact.id}']`).remove();
+    document.querySelector(`tr[data-rowid='${id}']`).remove();
   } else {
     const error = await response.json();
     alert(error.message);
@@ -164,7 +178,6 @@ async function deleteContact(id) {
 }
 
 async function DeleteContactShow(cnt_id) {
-  alert(cnt_id);
   const modal_form = document.getElementById("DeleteContact")
   const modal = new bootstrap.Modal(modal_form);
 
@@ -184,6 +197,7 @@ async function EditContactShow(cnt_id) {
     modal_form.querySelector("#last_name").value = "";
     modal_form.querySelector("#birthday").value = "";
     modal_form.querySelector("#email").value = "";
+    modal_form.querySelector("#phones").value = "";
     modal_form.querySelector("#address").value = "";
   }
   else{

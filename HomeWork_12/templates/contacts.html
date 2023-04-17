@@ -92,8 +92,8 @@
         <nav class="navbar">
           <div class="d-flex justify-content-start">
             <input class="form-control me-2" id="filter_str" type="search"
-                   placeholder="Search" aria-label="Search" value="{{ filter_str }}">
-            <button class="btn btn-outline-success text-nowrap" onclick="getContacts()">
+                   placeholder="Search" aria-label="Search" value="">
+            <button class="btn btn-outline-success text-nowrap" onclick="getContacts(1)">
               <span class="btn-label"><i class="fa fa-refresh"></i></span> Refresh
             </button>
           </div>
@@ -160,7 +160,7 @@
 <script>
   const numberOnly = e => {
     const value = e.value;
-    e.value = value.replace(/\D/g, '');
+    e.value = value.replace(/[^ ,\d]/g, '');
   }
 
   const contact_table = document.getElementById("ContactsTable");

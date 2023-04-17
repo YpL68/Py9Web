@@ -21,7 +21,12 @@ class Contact(MyBaseModel):
 
     @hybrid_property
     def full_name(self):
-        return self.first_name + " " + self.last_name
+        return f"{self.first_name}{' ' + self.last_name if self.last_name else ''}"
+
+    def birth_day(self):
+
+        return f"{self.first_name}{' ' + self.last_name if self.last_name else ''}"
+
 
     email = Column(String(64), unique=True, nullable=False)
     birthday = Column(Date)
