@@ -3,6 +3,8 @@ from datetime import date
 from pydantic import BaseModel, Field, EmailStr
 from typing import Optional, List
 
+from src.database.models import Role
+
 
 class PhoneOutput(BaseModel):
     phone_num: str
@@ -77,3 +79,20 @@ class ContactInListOutput(BaseModel):
                 "birthday": "1968-12-01",
             }
         }
+
+
+class UserInpur(BaseModel):
+    username: str = Field(min_length=6, max_length=12)
+    email: EmailStr
+    password: str = Field(min_length=6, max_length=8)
+
+
+class UserOutput(BaseModel):
+    id: int
+    username: str
+    email: str
+    avatar: str
+    roles: Role
+
+    class Config:
+        orm_mode = True

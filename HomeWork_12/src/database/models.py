@@ -1,4 +1,6 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Date, func
+import enum
+
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Date, func, Enum
 from sqlalchemy.orm import relationship, declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -44,3 +46,19 @@ class Phone(MyBaseModel):
     def __int__(self, contact_id: int, phone_num: str):
         self.contact_id = contact_id
         self.phone_num = sanitize_phone_num(phone_num)
+
+
+class Role(enum.Enum):
+    admin: str = "admin"
+    moderator: str = "moderator"
+    user: str = "user"
+
+
+class User(MyBaseModel):
+    __tablename__ = "users"
+    username = Column(String(50))
+    email = Column(String(150), nullable=False, unique=True)
+    password = Column(String(255), nullable=False)
+    refresh_token = Column(String(255), nullable=True)
+    avatar = Column(String(255), nullable=True)
+    roles = Column('roles', Enum(Role), default=Role.user)

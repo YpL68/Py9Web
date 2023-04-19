@@ -1,5 +1,4 @@
-from datetime import date
-from dateutil.relativedelta import relativedelta
+from datetime import date, timedelta
 
 from sqlalchemy.orm import Session
 from sqlalchemy import func, or_
@@ -92,7 +91,7 @@ async def delete_cnt_by_id(cnt_id: int, db: Session):
 
 async def get_birth_list(db: Session):
     date_today_dof = date.today().timetuple().tm_yday
-    date_end_dof = (date.today() + relativedelta(days=7)).timetuple().tm_yday
+    date_end_dof = (date.today() + timedelta(days=7)).timetuple().tm_yday
     if date_end_dof > date_today_dof:
         contacts = db.query(Contact).\
             filter(func.date_part('doy', Contact.birthday).between(date_today_dof, date_end_dof)).\
