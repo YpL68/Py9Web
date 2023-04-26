@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from pydantic import ValidationError
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 
@@ -23,6 +24,15 @@ async def value_error_exception_handler(request: Request, exc_: ValueError):
     )
 
 
+@app.exception_handler(ValidationError)
+async def validation_error_exception_handler(request: Request, exc_: ValidationError):
+    return JSONResponse(
+        status_code=422,
+        content={"detail": "Вася"}
+    )
+    # raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(err))
+
+
 @app.get("/api/healthchecker")
 def healthchecker(db: Session = Depends(get_db)):
     try:
@@ -40,4 +50,4 @@ def healthchecker(db: Session = Depends(get_db)):
 
 app.include_router(contacts.router, prefix='/api')
 app.include_router(front.router)
-app.include_router(auth.router)
+app.include_router(auth.router, prefix='/api')

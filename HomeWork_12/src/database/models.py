@@ -29,7 +29,6 @@ class Contact(MyBaseModel):
 
         return f"{self.first_name}{' ' + self.last_name if self.last_name else ''}"
 
-
     email = Column(String(64), unique=True, nullable=False)
     birthday = Column(Date)
 
@@ -56,7 +55,7 @@ class Role(enum.Enum):
 
 class User(MyBaseModel):
     __tablename__ = "users"
-    username = Column(String(50))
+    username = Column(String(12), nullable=False)
     email = Column(String(150), nullable=False, unique=True)
     password = Column(String(255), nullable=False)
     refresh_token = Column(String(255), nullable=True)

@@ -30,9 +30,9 @@ async def login(body: OAuth2PasswordRequestForm = Depends(), db: Session = Depen
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid password")
     # Generate JWT
     access_token = await auth_service.create_access_token(data={"sub": user.email})
-    refresh_token = await auth_service.create_refresh_token(data={"sub": user.email})
-    await repository_users.update_token(user, refresh_token, db)
-    return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
+    refresh_token_ = await auth_service.create_refresh_token(data={"sub": user.email})
+    await repository_users.update_token(user, refresh_token_, db)
+    return {"access_token": access_token, "refresh_token": refresh_token_, "token_type": "bearer"}
 
 
 @router.get('/refresh_token', response_model=TokenModel)
@@ -45,6 +45,6 @@ async def refresh_token(credentials: HTTPAuthorizationCredentials = Security(sec
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
 
     access_token = await auth_service.create_access_token(data={"sub": email})
-    refresh_token = await auth_service.create_refresh_token(data={"sub": email})
+    refresh_token_ = await auth_service.create_refresh_token(data={"sub": email})
     await repository_users.update_token(user, refresh_token, db)
-    return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
+    return {"access_token": access_token, "refresh_token": refresh_token_, "token_type": "bearer"}

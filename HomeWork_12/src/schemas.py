@@ -1,6 +1,6 @@
 from datetime import date
 
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field, EmailStr, validator
 from typing import Optional, List
 
 from src.database.models import Role
@@ -82,9 +82,18 @@ class ContactInListOutput(BaseModel):
 
 
 class UserInput(BaseModel):
-    username: str = Field(min_length=6, max_length=12)
+    username: str = Field(min_length=3, max_length=12)
     email: EmailStr
-    password: str = Field(min_length=6, max_length=8)
+    password: str = Field(min_length=6, max_length=12)
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "username": "Ben",
+                "email": "example@example.ua",
+                "password": "123456",
+            }
+        }
 
 
 class UserOutput(BaseModel):

@@ -28,7 +28,6 @@ function new_table_row(contact) {
   tr.append(td);
   td = document.createElement("td");
   td.className = "text-start";
-  // td.innerHTML = contact.first_name + (contact.last_name ? " " + contact.last_name : "");
   td.innerHTML = contact.full_name;
   tr.append(td);
   td = document.createElement("td");
@@ -155,11 +154,12 @@ async function editContact(cnt_id) {
   }
   else {
     const error = await response.json();
-    alert(error.message);
-    return false;
+    if (response.status === 422)
+      alert("Input data is invalid");
+    else
+      alert(error.detail);
   }
-
-  return true;
+  return response.ok;
 }
 
 async function deleteContact(id) {
