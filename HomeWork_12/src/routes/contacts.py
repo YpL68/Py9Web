@@ -5,8 +5,10 @@ from sqlalchemy import exc
 from sqlalchemy.orm import Session
 
 from src.database.db import get_db
+from src.database.models import User
 from src.repository import contacts as repository_contacts
 from src.schemas import ContactInput, ContactOutput, ContactInListOutput
+from src.services.auth import auth_service
 
 router = APIRouter(prefix="/contacts", tags=['contacts'])
 
@@ -14,13 +16,16 @@ router = APIRouter(prefix="/contacts", tags=['contacts'])
 @router.get("/", response_model=List[ContactInListOutput], tags=["contacts"])
 async def get_contacts(filter_type: int = Query(default=0, ge=0, le=4),
                        filter_str: str | None = None,
+                       _: User = Depends(auth_service.get_current_user),
                        db: Session = Depends(get_db)):
     contacts = await repository_contacts.get_cnt(db, filter_type, filter_str)
     return contacts
 
 
 @router.get("/{cnt_id}", response_model=ContactOutput)
-async def get_contact(cnt_id: int = Path(ge=1), db: Session = Depends(get_db)):
+async def get_contact(cnt_id: int = Path(ge=1),
+                      _: User = Depends(auth_service.get_current_user),
+                      db: Session = Depends(get_db)):
     contact = await repository_contacts.get_cnt_by_id(cnt_id, db)
     if contact is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Contact by id {cnt_id} not found")
@@ -28,7 +33,9 @@ async def get_contact(cnt_id: int = Path(ge=1), db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=ContactInListOutput, status_code=status.HTTP_201_CREATED)
-async def create_contact(body: ContactInput, db: Session = Depends(get_db)):
+async def create_contact(body: ContactInput,
+                         _: User = Depends(auth_service.get_current_user),
+                         db: Session = Depends(get_db)):
     try:
         contact = await repository_contacts.create_cnt(body, db)
     except exc.SQLAlchemyError as err:
@@ -39,7 +46,10 @@ async def create_contact(body: ContactInput, db: Session = Depends(get_db)):
 
 
 @router.put("/{cnt_id}", response_model=ContactInListOutput)
-async def update_contact(body: ContactInput, cnt_id: int = Path(ge=1), db: Session = Depends(get_db)):
+async def update_contact(body: ContactInput,
+                         cnt_id: int = Path(ge=1),
+                         _: User = Depends(auth_service.get_current_user),
+                         db: Session = Depends(get_db)):
     try:
         contact = await repository_contacts.update_cnt(cnt_id, body, db)
         if contact is None:
@@ -52,7 +62,9 @@ async def update_contact(body: ContactInput, cnt_id: int = Path(ge=1), db: Sessi
 
 
 @router.delete("/{cnt_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_contact(cnt_id: int = Path(ge=1), db: Session = Depends(get_db)):
+async def delete_contact(cnt_id: int = Path(ge=1),
+                         _: User = Depends(auth_service.get_current_user),
+                         db: Session = Depends(get_db)):
     try:
         contact = await repository_contacts.delete_cnt_by_id(cnt_id, db)
         if contact is None:

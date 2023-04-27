@@ -4,7 +4,9 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
 from src.database.db import get_db
+from src.database.models import User
 from src.repository.contacts import get_cnt
+from src.services.auth import auth_service
 
 templates = Jinja2Templates(directory="templates")
 router = APIRouter(tags=['front'])
@@ -25,6 +27,5 @@ async def root(request: Request):
 
 
 @router.get("/contacts", response_class=HTMLResponse, description="Contacts Page")
-async def contacts(request: Request, db: Session = Depends(get_db)):
-    contacts_ = await get_cnt(db)
-    return templates.TemplateResponse("contacts.html", {"request": request, "contacts": contacts_})
+async def contacts(request: Request):
+    return templates.TemplateResponse("contacts.html", {"request": request})

@@ -123,33 +123,6 @@
           </tr>
           </thead>
           <tbody>
-          {% for cnt in contacts %}
-          <tr data-rowid="{{ cnt.id }}">
-            <td class="text-end">{{ cnt.id }}</td>
-            <td class="text-start">{{ cnt.full_name }}</td>
-            <td class="text-start">{{ cnt.birthday|format_date }}</td>
-            <td class="text-start">{{ cnt.email }}</td>
-
-            <td>
-              <button type="button" class="btn btn-outline-secondary btn-action"
-                      style="--bs-btn-padding-y: .2rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;"
-                      name="{{ cnt.id }}"
-                      onclick="EditContactShow(this.name)"
-              >
-                <span class="btn-label"><i class="fa fa-user-edit"></i></span>
-              </button>
-            </td>
-            <td>
-              <button type="button" class="btn btn-outline-secondary btn-action"
-                      style="--bs-btn-padding-y: .2rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;"
-                      name="{{ cnt.id }}"
-                      onclick="DeleteContactShow(this.name)"
-              >
-                <span class="btn-label"><i class="fa fa-user-minus"></i></span>
-              </button>
-            </td>
-          </tr>
-          {% endfor %}
           </tbody>
         </table>
       </div>

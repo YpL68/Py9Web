@@ -77,10 +77,14 @@ async function getContacts(filter_type=0) {
     filter_str = document.getElementById("filter_str").value;
 
   const url_str = `/api/contacts/?filter_type=${filter_type}&filter_str=${filter_str}`
+  const token = localStorage.getItem('accessToken');
 
   const response = await fetch(url_str, {
     method: "GET",
-    headers: {"Accept": "application/json"}
+    headers: {
+      "Accept": "application/json",
+      Authorization: `Bearer ${token}`,
+    }
   });
   if (response.ok === true) {
     const contacts = await response.json();
@@ -92,8 +96,12 @@ async function getContacts(filter_type=0) {
     contacts.forEach(contact => rows.append(new_table_row(contact)));
   }
   else{
-    const error = await response.json();
-    alert(error.message);
+    if (response.status === 401)
+      alert("Not authenticated");
+    else {
+      const error = await response.json();
+      alert(error.message);
+    }
   }
 }
 
@@ -121,9 +129,14 @@ function str_to_phones (phones_str) {
 }
 
 async function getContact(id) {
+  const token = localStorage.getItem('accessToken');
+
   return(await fetch(`/api/contacts/${id}`, {
     method: "GET",
-    headers: {"Accept": "application/json"}
+    headers: {
+      "Accept": "application/json",
+      Authorization: `Bearer ${token}`,
+    }
   }));
 }
 
@@ -133,9 +146,15 @@ async function editContact(cnt_id) {
   const last_name = document.getElementById("last_name").value;
   const address = document.getElementById("address").value;
 
+  const token = localStorage.getItem('accessToken');
+
   const response = await fetch(`/api/contacts/${cnt_id}`, {
     method: (cnt_id === "" ? "POST" : "PUT"),
-    headers: {"Accept": "application/json", "Content-Type": "application/json"},
+    headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
     body: JSON.stringify({
       first_name: document.getElementById("first_name").value,
       last_name: last_name ? last_name : null,
@@ -153,28 +172,41 @@ async function editContact(cnt_id) {
       document.querySelector(`tr[data-rowid='${contact.id}']`).replaceWith(new_table_row(contact));
   }
   else {
-    const error = await response.json();
-    if (response.status === 422)
+    if (response.status === 401)
+      alert("Not authenticated");
+    else if (response.status === 422)
       alert("Input data is invalid");
-    else
+    else {
+      const error = await response.json();
       alert(error.detail);
+    }
   }
   return response.ok;
 }
 
 async function deleteContact(id) {
+  const token = localStorage.getItem('accessToken');
+
   const response = await fetch(`/api/contacts/${id}`, {
     method: "DELETE",
-    headers: {"Accept": "application/json"}
+    headers: {
+      "Accept": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+
   });
   if (response.ok === true) {
     document.querySelector(`tr[data-rowid='${id}']`).remove();
-  } else {
-    const error = await response.json();
-    alert(error.message);
-    return false;
   }
-  return true;
+  else {
+    if (response.status === 401)
+      alert("Not authenticated");
+    else {
+      const error = await response.json();
+      alert(error.detail);
+    }
+  }
+  return response.ok;
 }
 
 async function DeleteContactShow(cnt_id) {
