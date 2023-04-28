@@ -1,6 +1,6 @@
 from datetime import date
 
-from pydantic import BaseModel, Field, EmailStr, validator
+from pydantic import BaseModel, Field, EmailStr
 from typing import Optional, List
 
 from src.database.models import Role
@@ -111,3 +111,7 @@ class TokenModel(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
+
+
+class RequestEmail(BaseModel):
+    email: EmailStr
