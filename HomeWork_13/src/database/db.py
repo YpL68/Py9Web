@@ -1,4 +1,5 @@
 from fastapi import HTTPException, status
+import redis.asyncio as redis
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy import exc
@@ -9,6 +10,8 @@ URI = settings.uri
 
 engine = create_engine(URI, echo=True)
 session = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+
+redis_db = redis.Redis(host=settings.redis_host, port=settings.redis_port, db=0)
 
 
 # Dependency

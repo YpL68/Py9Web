@@ -2,14 +2,23 @@ from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+
+from fastapi_limiter import FastAPILimiter
+
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 
-from src.database.db import get_db
+from src.database.db import get_db, redis_db
 from src.routes import contacts, front, auth
 
 app = FastAPI()
+
+
+@app.on_event("startup")
+async def startup():
+    await FastAPILimiter.init(redis_db)
+
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -28,9 +37,8 @@ async def value_error_exception_handler(request: Request, exc_: ValueError):
 async def validation_error_exception_handler(request: Request, exc_: ValidationError):
     return JSONResponse(
         status_code=422,
-        content={"detail": "Вася"}
+        content={"message": f"{request.url}: {str(exc_)}"}
     )
-    # raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(err))
 
 
 @app.get("/api/healthchecker")

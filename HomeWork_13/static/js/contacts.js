@@ -100,7 +100,7 @@ async function getContacts(filter_type=0) {
       alert("Not authenticated");
     else {
       const error = await response.json();
-      alert(error.message);
+      alert(error.detail);
     }
   }
 }

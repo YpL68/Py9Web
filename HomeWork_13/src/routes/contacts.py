@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import Depends, HTTPException, status, Path, Query, APIRouter
+from fastapi_limiter.depends import RateLimiter
 from sqlalchemy import exc
 from sqlalchemy.orm import Session
 
@@ -19,7 +20,8 @@ allowed_operation_update = RoleAccess([Role.admin, Role.moderator])
 allowed_operation_remove = RoleAccess([Role.admin])
 
 
-@router.get("/", response_model=List[ContactInListOutput], dependencies=[Depends(allowed_operation_get)])
+@router.get("/", response_model=List[ContactInListOutput],
+            dependencies=[Depends(allowed_operation_get), Depends(RateLimiter(times=2, seconds=5))])
 async def get_contacts(filter_type: int = Query(default=0, ge=0, le=4),
                        filter_str: str | None = None,
                        _: User = Depends(auth_service.get_current_user),
@@ -39,7 +41,7 @@ async def get_contact(cnt_id: int = Path(ge=1),
 
 
 @router.post("/", response_model=ContactInListOutput, status_code=status.HTTP_201_CREATED,
-             dependencies=[Depends(allowed_operation_create)])
+             dependencies=[Depends(allowed_operation_create), Depends(RateLimiter(times=1, seconds=10))])
 async def create_contact(body: ContactInput,
                          _: User = Depends(auth_service.get_current_user),
                          db: Session = Depends(get_db)):
@@ -52,7 +54,8 @@ async def create_contact(body: ContactInput,
     return contact
 
 
-@router.put("/{cnt_id}", response_model=ContactInListOutput, dependencies=[Depends(allowed_operation_update)],
+@router.put("/{cnt_id}", response_model=ContactInListOutput,
+            dependencies=[Depends(allowed_operation_update), Depends(RateLimiter(times=1, seconds=10))],
             description='Only moderators and admin')
 async def update_contact(body: ContactInput,
                          cnt_id: int = Path(ge=1),
