@@ -1,6 +1,6 @@
 import enum
 
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Date, func, Enum
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Date, func, Enum, Boolean
 from sqlalchemy.orm import relationship, declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -61,3 +61,4 @@ class User(MyBaseModel):
     refresh_token = Column(String(255), nullable=True)
     avatar = Column(String(255), nullable=True)
     roles = Column('roles', Enum(Role), default=Role.user)
+    confirmed = Column(Boolean, default=False)
