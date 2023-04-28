@@ -7,14 +7,15 @@ from fastapi.security import OAuth2PasswordBearer  # Bearer token
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
 
+from src.conf.config import settings
 from src.database.db import get_db
 from src.repository import users as repository_users
 
 
 class Auth:
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-    SECRET_KEY = "secret_key"
-    ALGORITHM = "HS256"
+    SECRET_KEY = settings.secret_key
+    ALGORITHM = settings.algorithm
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
     def verify_password(self, plain_password, hashed_password):
