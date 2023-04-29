@@ -244,7 +244,7 @@ async function EditContactShow(cnt_id) {
       modal_form.querySelector("#address").value = contact.address;
     } else {
       const error = await response.json();
-      alert(error.message);
+      alert(error.detail);
       return;
     }
   }
