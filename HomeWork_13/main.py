@@ -2,15 +2,14 @@ from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-
 from fastapi_limiter import FastAPILimiter
-
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 from sqlalchemy import text
+from starlette.middleware.cors import CORSMiddleware
 
 from src.database.db import get_db, redis_db
-from src.routes import contacts, front, auth
+from src.routes import contacts, front, auth, users
 
 app = FastAPI()
 
@@ -18,6 +17,14 @@ app = FastAPI()
 @app.on_event("startup")
 async def startup():
     await FastAPILimiter.init(redis_db)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['http://127.0.0.1:5500', 'http://localhost:5500'],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -59,3 +66,4 @@ def healthchecker(db: Session = Depends(get_db)):
 app.include_router(contacts.router, prefix='/api')
 app.include_router(front.router)
 app.include_router(auth.router, prefix='/api')
+app.include_router(users.router, prefix='/api')
