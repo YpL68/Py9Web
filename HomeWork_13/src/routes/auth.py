@@ -7,7 +7,7 @@ from src.database.db import get_db
 from src.schemas import UserInput, UserOutput, TokenModel, RequestEmail
 from src. repository import users as repository_users
 from src.services.auth import auth_service
-from src.services.email import send_email
+from src.services.email import send_email, send_forgot_password
 
 router = APIRouter(prefix="/auth", tags=['auth'])
 security = HTTPBearer()
@@ -57,21 +57,31 @@ async def refresh_token(credentials: HTTPAuthorizationCredentials = Security(sec
     return {"access_token": access_token, "refresh_token": refresh_token_, "token_type": "bearer"}
 
 
-# @router.get('/change_password/{token}')
-# async def change_password(token: str, db: Session = Depends(get_db)):
-#     email = auth_service.get_email_from_token(token)
-#     user = await repository_users.get_user_by_email(email, db)
-#     if user is None:
-#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Verification error")
-#     if user.confirmed:
-#         return {"message": "Your email is already confirmed"}
-#     await repository_users.confirmed_email(email, db)
-#     return {"message": "Email confirmed"}
+@router.post('/change_password', status_code=status.HTTP_200_OK)
+async def change_password(body: RequestEmail, background_tasks: BackgroundTasks,
+                          request: Request, db: Session = Depends(get_db)):
+    exist_user = await repository_users.get_user_by_email(body.email, db)
+    if exist_user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email")
+    background_tasks.add_task(send_forgot_password, body.email, exist_user.username, str(request.base_url))
+    return {"detail": "Password reset request send.\nWe've emailed you with instructions to reset your password."}
+
+
+@router.get('/change_password/{token}')
+async def change_password(token: str, db: Session = Depends(get_db)):
+    email = auth_service.get_email_from_token(token, "password_token")
+    user = await repository_users.get_user_by_email(email, db)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Verification error")
+    # if user.confirmed:
+    #     return {"message": "Your email is already confirmed"}
+    # await repository_users.confirmed_email(email, db)
+    return {"message": "Password has ben changed."}
 
 
 @router.get('/confirmed_email/{token}')
 async def confirmed_email(token: str, db: Session = Depends(get_db)):
-    email = auth_service.get_email_from_token(token)
+    email = auth_service.get_email_from_token(token, "email_token")
     user = await repository_users.get_user_by_email(email, db)
     if user is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Verification error")
@@ -89,4 +99,5 @@ async def request_email(body: RequestEmail, background_tasks: BackgroundTasks, r
         if user.confirmed:
             return {"message": "Your email is already confirmed"}
         background_tasks.add_task(send_email, EmailStr(user.email), user.username, str(request.base_url))
+
     return {"message": "Check your email for confirmation."}

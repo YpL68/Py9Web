@@ -36,3 +36,19 @@ async def send_email(email: EmailStr, username: str, host: str):
         await fm.send_message(message, template_name="email_template.html")
     except ConnectionErrors as err:
         print(err)
+
+
+async def send_forgot_password(email: EmailStr, username: str, host: str):
+    try:
+        token_verification = auth_service.create_password_token({"sub": email})
+        message = MessageSchema(
+            subject="Forgot password.",
+            recipients=[email],
+            template_body={"host": host, "username": username, "token": token_verification},
+            subtype=MessageType.html
+        )
+
+        fm = FastMail(conf)
+        await fm.send_message(message, template_name="forgot_pass_template.html")
+    except ConnectionErrors as err:
+        print(err)

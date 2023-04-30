@@ -104,4 +104,28 @@ function RememberMeClick(rmCheck) {
   rmCheck.value = rmCheck.checked ? "1" : "0";
 }
 
+async function ForgotPassword() {
+  const modal_form = document.getElementById("LoginForm")
+  const response = await fetch("/api/auth/change_password/", {
+    method: "POST",
+    headers: {"Accept": "application/json", "Content-Type": "application/json"},
+    body: JSON.stringify({
+      email: modal_form.querySelector("#UserEmail").value
+    })
+  });
+  if (response.ok !== true) {
+    const error = await response.json();
+    if (response.status === 422){
+      alert("Input data is invalid");
+    }
+    else
+      alert(error.detail);
+  }
+  else {
+    const message = await response.json();
+    alert(message.detail);
+    const modal_login_form = bootstrap.Modal.getInstance(modal_form);
+    if (modal_login_form) modal_login_form.hide();
+  }
+}
 
