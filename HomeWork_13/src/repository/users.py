@@ -35,6 +35,12 @@ async def confirmed_email(email: str, db: Session) -> None:
     db.commit()
 
 
+async def change_password(email: str, password: str, db: Session) -> None:
+    user = await get_user_by_email(email, db)
+    user.password = password
+    db.commit()
+
+
 async def update_avatar(email: str, url: str, db: Session) -> User:
     user = await get_user_by_email(email, db)
     user.avatar = url

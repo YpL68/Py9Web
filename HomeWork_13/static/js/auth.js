@@ -1,4 +1,6 @@
 async function RegistrationFormShow() {
+  const modal_login_form = bootstrap.Modal.getInstance(document.getElementById("LoginForm"))
+  if (modal_login_form) modal_login_form.hide();
 
   const modal_form = document.getElementById("RegistrationForm")
   const modal = new bootstrap.Modal(modal_form);
@@ -61,6 +63,14 @@ async function registerUser() {
 async function loginUser() {
   const modal_form = document.getElementById("LoginForm")
 
+  // const rmCheck = modal_form.querySelector("#RememberMe")
+  // const emailInput = modal_form.querySelector("#UserEmail");
+  //
+  // if (rmCheck.checked)
+  //   localStorage.username = emailInput.value;
+  // else
+  //   localStorage.username = "";
+
   const response = await fetch("/api/auth/login/", {
     method: "POST",
     headers: {"Content-Type": "application/x-www-form-urlencoded"},
@@ -89,4 +99,9 @@ async function loginUser() {
 
   return response.ok
 }
+
+function RememberMeClick(rmCheck) {
+  rmCheck.value = rmCheck.checked ? "1" : "0";
+}
+
 

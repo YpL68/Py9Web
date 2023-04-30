@@ -55,18 +55,32 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <div class="form-outline mb-4">
-          <label class="control-label" for="UserEmail">Email address</label>
-          <input type="email" id="UserEmail" class="form-control" autocomplete="off"/>
+        <div class="form-floating mb-3">
+          <input type="email" class="form-control" id="UserEmail" placeholder="name@example.com">
+          <label for="UserEmail">Email address</label>
         </div>
-        <div class="form-outline mb-4">
-          <label class="control-label" for="UserPass">Password</label>
-          <input type="password" id="UserPass" class="form-control" autocomplete="off"/>
+        <div class="form-floating">
+          <input type="password" class="form-control" id="UserPass" placeholder="Password">
+          <label for="UserPass">Password</label>
+        </div>
+        <div class="col-12 mt-3">
+          <div class="form-check">
+            <input class="form-check-input" onclick="RememberMeClick(this)" type="checkbox" value="0" id="RememberMe">
+            <label class="form-check-label" for="RememberMe">
+              Remember me
+            </label>
+          </div>
+        </div>
+        <div class="col-12 mt-3">
+          <a href="#">Forgot password?</a>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary">Login</button>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <div class="col-12 text-center mt-3">
+          <p>Not a member? <a href="#" onclick="RegistrationFormShow()">Register</a></p>
+        </div>
       </div>
     </div>
   </div>
@@ -98,14 +112,9 @@
     </ul>
   </div>
   <div class="collapse navbar-collapse">
-{#    <button type = "button" class = "btn navbar-btn">Navbar Button1</button>#}
-{#    <button type = "button" class = "btn navbar-btn">Navbar Button2</button>#}
     <ul class="navbar-nav ms-auto">
       <li class="nav-item">
         <a class="nav-link" onclick="LoginFormShow()" href="#">Login</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" onclick="RegistrationFormShow()" href="#">Registration</a>
       </li>
     </ul>
   </div>
