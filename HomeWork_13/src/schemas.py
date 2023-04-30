@@ -115,3 +115,12 @@ class TokenModel(BaseModel):
 
 class RequestEmail(BaseModel):
     email: EmailStr
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "email": "example@example.ua"
+            }
+        }
+
+
