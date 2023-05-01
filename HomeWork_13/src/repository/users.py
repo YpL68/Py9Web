@@ -35,8 +35,7 @@ async def confirmed_email(email: str, db: Session) -> None:
     db.commit()
 
 
-async def change_password(email: str, password: str, db: Session) -> None:
-    user = await get_user_by_email(email, db)
+async def change_password(user: User, password: str, db: Session) -> None:
     user.password = password
     db.commit()
 

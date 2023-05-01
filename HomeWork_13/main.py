@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 from fastapi_limiter import FastAPILimiter
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
@@ -28,8 +27,6 @@ app.add_middleware(
 
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
-templates = Jinja2Templates(directory="templates")
 
 
 @app.exception_handler(ValueError)

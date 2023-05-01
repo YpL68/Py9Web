@@ -1,12 +1,6 @@
-from fastapi import Depends, APIRouter, Request
+from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy.orm import Session
-
-from src.database.db import get_db
-from src.database.models import User
-from src.repository.contacts import get_cnt
-from src.services.auth import auth_service
 
 templates = Jinja2Templates(directory="templates")
 router = APIRouter(tags=['front'])
