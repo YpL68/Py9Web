@@ -47,16 +47,14 @@ async function registerUser() {
       password: document.getElementById("UserPass").value
     })
   });
-
+  const result = await response.json();
   if (response.ok !== true) {
-    const error = await response.json();
     if (response.status === 422){
       alert("Input data is invalid");
     }
-    else
-      alert(error.detail);
+    else alert(result.detail);
   }
-
+  else alert(result.detail);
   return response.ok
 }
 
@@ -96,7 +94,6 @@ async function loginUser() {
     else
       alert(error.detail);
   }
-
   return response.ok
 }
 
@@ -106,7 +103,7 @@ function RememberMeClick(rmCheck) {
 
 async function ForgotPassword() {
   const modal_form = document.getElementById("LoginForm")
-  const response = await fetch("/api/auth/change_password/", {
+  const response = await fetch("/api/auth/forgot_password/", {
     method: "POST",
     headers: {"Accept": "application/json", "Content-Type": "application/json"},
     body: JSON.stringify({
@@ -129,3 +126,34 @@ async function ForgotPassword() {
   }
 }
 
+async function ChangePassword() {
+  const form = document.getElementById("ChangePasswordForm")
+  const current_url = window.location.href;
+  const new_password = form.querySelector("#UserPassNew").value;
+  const conf_password = form.querySelector("#UserPassConf").value;
+
+  if (new_password !== conf_password){
+    alert("The new password does not equal the confirmed password.");
+  }
+  else {
+    const response = await fetch(current_url, {
+      method: "PUT",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        password: new_password
+      })
+    });
+    const result = await response.json();
+    if (response.ok !== true) {
+      if (response.status === 422)
+        alert("Input data is invalid");
+      else alert(result.detail);
+    } else {
+      alert(result.detail);
+      window.location.href = "\\";
+    }
+  }
+}
