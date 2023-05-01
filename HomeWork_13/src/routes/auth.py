@@ -7,7 +7,7 @@ from sqlalchemy import exc
 from sqlalchemy.orm import Session
 
 from src.database.db import get_db
-from src.schemas import UserInput, UserOutput, TokenModel, RequestEmail, NewPasswordInput
+from src.schemas import UserInput, TokenModel, RequestEmail, NewPasswordInput
 from src. repository import users as repository_users
 from src.services.auth import auth_service
 from src.services.email import send_email, send_forgot_password
