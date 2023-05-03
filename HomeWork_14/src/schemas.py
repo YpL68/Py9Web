@@ -126,4 +126,3 @@ class RequestEmail(BaseModel):
 
 class NewPasswordInput(BaseModel):
     password: str = Field(min_length=6, max_length=12)
-

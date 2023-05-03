@@ -6,7 +6,14 @@ from sqlalchemy.orm import Session
 
 from src.database.models import Contact
 from src.schemas import ContactInput, PhoneOutput
-from src.repository.contacts import get_cnt_by_id, get_cnt, create_cnt, update_cnt, delete_cnt_by_id, get_birth_list
+from src.repository.contacts import (
+    get_cnt_by_id,
+    get_cnt,
+    create_cnt,
+    update_cnt,
+    delete_cnt_by_id,
+    get_birth_list
+)
 
 
 class TestContactsRepository(unittest.IsolatedAsyncioTestCase):
