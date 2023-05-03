@@ -8,6 +8,9 @@ __pycache__/
 
 # My settings
 postgres-data/
+.HomeWork_12/
+./HomeWork_13
+
 
 # Distribution / packaging
 .Python
