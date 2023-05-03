@@ -80,6 +80,3 @@ class TestUsersRepository(unittest.IsolatedAsyncioTestCase):
         await update_avatar(email=self.email, url=image_url, db=self.session)
         self.assertEqual(u_user.avatar, image_url)
 
-
-if __name__ == '__main__':
-    unittest.main()

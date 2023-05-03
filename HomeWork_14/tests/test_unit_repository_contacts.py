@@ -112,6 +112,3 @@ class TestContactsRepository(unittest.IsolatedAsyncioTestCase):
         result = await delete_cnt_by_id(cnt_id=1, db=self.session)
         self.assertIsNone(result)
 
-
-if __name__ == '__main__':
-    unittest.main()
