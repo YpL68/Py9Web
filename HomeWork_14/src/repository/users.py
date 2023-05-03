@@ -24,7 +24,7 @@ async def create_user(body: UserInput, db: Session):
     return new_user
 
 
-async def update_token(user: User, refresh_token, db: Session):
+async def update_token(user: User, refresh_token: str | None, db: Session):
     user.refresh_token = refresh_token
     db.commit()
 
