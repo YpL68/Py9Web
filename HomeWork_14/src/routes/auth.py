@@ -3,7 +3,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2Pas
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import EmailStr
-from sqlalchemy import exc
+# from sqlalchemy import exc
 from sqlalchemy.orm import Session
 
 from src.conf import messages as msg
@@ -89,12 +89,13 @@ async def change_password(token: str, body: NewPasswordInput, db: Session = Depe
     if user is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=msg.VERIFICATION_ERROR)
     password = auth_service.get_password_hash(body.password)
-    try:
-        await repository_users.change_password(user, password, db)
-    except exc.SQLAlchemyError as err:
-        if db.in_transaction():
-            db.rollback()
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err.args[0])
+    await repository_users.change_password(user, password, db)
+    # try:
+    #     await repository_users.change_password(user, password, db)
+    # except exc.SQLAlchemyError as err:
+    #     if db.in_transaction():
+    #         db.rollback()
+    #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err.args[0])
     return {"detail": msg.PASSWORD_CHANGED}
 
 
@@ -116,6 +117,6 @@ async def request_email(body: RequestEmail, background_tasks: BackgroundTasks, r
     user = await repository_users.get_user_by_email(body.email, db)
     if user:
         if user.confirmed:
-            return {"message": "Your email is already confirmed"}
+            return {"message": msg.EMAIL_ALREADY_CONFIRMED}
         background_tasks.add_task(send_email, EmailStr(user.email), user.username, str(request.base_url))
-    return {"detail": "Check your email for confirmation."}
+    return {"detail": msg.CHECK_YOUR_EMAIL}
