@@ -1,5 +1,7 @@
 EMAIL_NOT_CONFIRMED = "Email not confirmed!"
 EMAIL_CONFIRMED = "Email confirmed."
+EMAIL_ALREADY_CONFIRMED = "Your email is already confirmed."
+CHECK_YOUR_EMAIL = "Check your email for confirmation."
 USER_SUCCESSFULLY_CREATED = "User has ben created.\nCheck your email for confirmation."
 ACCOUNT_ALREADY_EXISTS = "Account already exists"
 INVALID_EMAIL = "Invalid email"

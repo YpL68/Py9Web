@@ -8,8 +8,6 @@ __pycache__/
 
 # My settings
 postgres-data/
-.HomeWork_12/
-./HomeWork_13
 
 
 # Distribution / packaging
@@ -134,3 +132,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+HomeWork_13/postgres-data/global/pg_control
+HomeWork_13/postgres-data/pg_wal/000000010000000000000001
+HomeWork_13/postgres-data/global/pg_control
+HomeWork_13/postgres-data/pg_wal/000000010000000000000001
+HomeWork_13/postgres-data/global/pg_control
+HomeWork_13/postgres-data/pg_wal/000000010000000000000001

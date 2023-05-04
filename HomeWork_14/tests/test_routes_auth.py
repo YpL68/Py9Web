@@ -147,25 +147,49 @@ def test_confirmed_email(client, user):
     assert payload["detail"] == msg.EMAIL_CONFIRMED
 
 
-def test_confirmed_email_verification_error(client, user, session):
+def test_confirmed_email_verification_error(client):
+    email_token = auth_service.create_email_token(data={"sub": "invalid@email.com"})
+    response = client.get(f"/api/auth/confirmed_email/{email_token}")
+    assert response.status_code == 400, response.text
+    payload = response.json()
+    assert payload["detail"] == msg.VERIFICATION_ERROR
+
+
+def test_confirmed_email_1(client, user, session):
     current_user: User = session.query(User).filter(User.email == user.get("email")).first()
     current_user.confirmed = False
     session.commit()
 
-    email_token = auth_service.create_email_token(data={"sub": "invalid@email.com"})
+    email_token = auth_service.create_email_token(data={"sub": user.get("email")})
     response = client.get(f"/api/auth/confirmed_email/{email_token}")
-    assert response.status_code == 400, response.text
+    assert response.status_code == 200, response.text
     payload = response.json()
-    assert payload["detail"] == msg.VERIFICATION_ERROR
+    assert payload["detail"] == msg.EMAIL_CONFIRMED
 
 
-def test_confirmed_email_verification_error_1(client, user, session):
+def test_request_email(client, user, session, monkeypatch):
+    current_user: User = session.query(User).filter(User.email == user.get("email")).first()
+    current_user.confirmed = False
+    session.commit()
+
+    mock_send_email = MagicMock()
+    monkeypatch.setattr("src.routes.auth.send_email", mock_send_email)
+
+    response = client.post("/api/auth/request_email", json={"email": user.get("email")})
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    assert payload["detail"] == msg.CHECK_YOUR_EMAIL
+
+
+def test_request_email_user_confirmed(client, user, session, monkeypatch):
     current_user: User = session.query(User).filter(User.email == user.get("email")).first()
     current_user.confirmed = True
     session.commit()
 
-    email_token = auth_service.create_email_token(data={"sub": "invalid@email.com"})
-    response = client.get(f"/api/auth/confirmed_email/{email_token}")
-    assert response.status_code == 400, response.text
+    mock_send_email = MagicMock()
+    monkeypatch.setattr("src.routes.auth.send_email", mock_send_email)
+
+    response = client.post("/api/auth/request_email", json={"email": user.get("email")})
+    assert response.status_code == 200, response.text
     payload = response.json()
-    assert payload["detail"] == msg.VERIFICATION_ERROR
+    assert payload["message"] == msg.EMAIL_ALREADY_CONFIRMED
