@@ -23,6 +23,19 @@ conf = ConnectionConfig(
 
 
 async def send_email(email: EmailStr, username: str, host: str):
+    """
+    The send_email function sends an email to the user with a link to confirm their email address.
+        The function takes in three parameters:
+            -email: EmailStr, the user's email address.
+            -username: str, the username of the user who is registering for an account.  This will be used in a greeting message within the body of the email sent to them.
+            -host: str, this is used as part of a URL that will be included in an HTML template for sending emails.
+
+    :param email: EmailStr: Validate the email address
+    :param username: str: Pass the username to the email template
+    :param host: str: Pass the host of the server to the email template
+    :return: A coroutine, which is a special type of object that works with asyncio
+    :doc-author: Trelent
+    """
     try:
         token_verification = auth_service.create_email_token({"sub": email})
         message = MessageSchema(
@@ -39,6 +52,19 @@ async def send_email(email: EmailStr, username: str, host: str):
 
 
 async def send_forgot_password(email: EmailStr, username: str, host: str):
+    """
+    The send_forgot_password function sends an email to the user with a link to reset their password.
+        Args:
+            email (str): The user's email address.
+            username (str): The user's username.
+            host (str): The hostname of the server where this function is being called from.
+
+    :param email: EmailStr: Specify the email address of the user who forgot their password
+    :param username: str: Display the username in the email
+    :param host: str: Pass the host name to the template
+    :return: A coroutine, which is an object that can be used to start a task
+    :doc-author: Trelent
+    """
     try:
         token_verification = auth_service.create_password_token({"sub": email})
         message = MessageSchema(
